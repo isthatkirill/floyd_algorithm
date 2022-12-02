@@ -6,12 +6,15 @@ class Master {
         double[][] intensityMatrix = new double[20][20]; // Матрица интенсивностей трафика в направлениях связи
         int[][] shortRouteMatrix = new int[20][20]; //матрица кратчайших путей
         double[][] loadIntensity = new double[20][20]; // Матрица интенсивностей нагрузок на линии связи (5)
+        double[][] streamMatrix = new double[20][20]; //матриц потоков (6)
 
         mainMatrix = shortestPath.readMatrixPath(); //считывание исходной матрицы из файла
         intensityMatrix = shortestPath.readTrafficIntensityMatrix(); // считывание матрицы интенсивностей трафика в направлениях связи (3)
         shortRouteMatrix = shortestPath.floyd(mainMatrix); // печать матриц и возврат функцией матрицы кратчаших путей
         loadIntensity = shortestPath.loadIntensity(intensityMatrix, shortRouteMatrix); // получение матрицы интенсивностей нагрузок на линии связи (5)
-        shortestPath.printMatrix(loadIntensity);
+        shortestPath.printMatrix(loadIntensity); //вывод матрица интесивностей нагрузок на линии связи
+        streamMatrix = shortestPath.streamMatrix(loadIntensity); // получение матрицы потоков
+        shortestPath.printMatrix(streamMatrix);
 
     }
 }

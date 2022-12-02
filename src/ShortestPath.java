@@ -42,6 +42,7 @@ class ShortestPath {
 
     //вывод матриц на экран
     void printMatrix(double[][] matrix) {
+        System.out.println();
         for (int i = 0; i < V; ++i) {
             for (int j = 0; j < V; ++j) {
                 if (matrix[i][j] == INF)
@@ -54,6 +55,7 @@ class ShortestPath {
     }
 
     void printMatrixInt(int[][] matrix) {
+        System.out.println();
         for (int i = 0; i < V; ++i) {
             for (int j = 0; j < V; ++j) {
                 if (matrix[i][j] == INF)
@@ -64,7 +66,6 @@ class ShortestPath {
             System.out.println();
         }
     }
-
 
     //считывание с файла
     static List<String> readFileContents(String path) {
@@ -119,6 +120,32 @@ class ShortestPath {
                 for (int k = routes[i][j] - 1; k != j; k = routes[k][j] - 1) {
                     mas[(int)k][routes[k][j] - 1] += intensities[i][j];
                 }
+            }
+        }
+        return mas;
+    }
+
+
+    double[][] streamMatrix(double[][] intensities) { //матрица потоков (6)
+        double p_max = 0.02;
+        double[][] mas = new double[20][20];
+        for (int i = 0; i < 20; ++i) {
+            for (int j = 0; j < 20; ++j) {
+                int v = 0;
+                if (intensities[i][j] != 0) {
+                    v = 1;
+                    double p = 1;
+                    double y = intensities[i][j];
+                    double numerator = y;
+                    double sum = y;
+                    while (p > p_max) {
+                        ++v; // прибавляем единицу к v каждую итерацию
+                        numerator = (numerator / v) * y; //считаем числитель (перезаписываем)
+                        sum += numerator; //считаем сумму (знаменатель)
+                        p = numerator / sum; //находим p - если (p <= p_max) - цикл заканчивается, требование к качеству обслуживания выполнено
+                    }
+                }
+                mas[i][j] = v;
             }
         }
         return mas;
