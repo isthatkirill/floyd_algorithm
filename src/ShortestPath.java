@@ -7,10 +7,10 @@ import java.util.List;
 class ShortestPath {
 
     final static int INF = 99999, V = 20; // INF - нет прямого пути, V - количество вершин графа
-    double[][] shortDist = new double[20][20];
+    int[][] shortDist = new int[20][20];
 
     //алгоритм флойда
-    void floyd(double[][] dist) {
+    int[][] floyd(double[][] dist) {
         int t = 1;
         for (int i = 0; i < 20; ++i) {
             for (int j = 0; j < 20; ++j) {
@@ -35,18 +35,31 @@ class ShortestPath {
         System.out.println("Матрица кратчайших дистанций: ");
         printMatrix(dist);
         System.out.println("Матрица кратчайших путей: ");
-        printMatrix(shortDist);
+        printMatrixInt(shortDist);
+        return shortDist;
     }
 
 
     //вывод матриц на экран
-    static void printMatrix(double[][] matrix) {
+    void printMatrix(double[][] matrix) {
         for (int i = 0; i < V; ++i) {
             for (int j = 0; j < V; ++j) {
                 if (matrix[i][j] == INF)
                     System.out.print("INF ");
                 else
-                    System.out.printf("%9.5f ", matrix[i][j]);
+                    System.out.printf("%11.5f ", matrix[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    void printMatrixInt(int[][] matrix) {
+        for (int i = 0; i < V; ++i) {
+            for (int j = 0; j < V; ++j) {
+                if (matrix[i][j] == INF)
+                    System.out.print("INF ");
+                else
+                    System.out.printf("%9d ", matrix[i][j]);
             }
             System.out.println();
         }
@@ -63,8 +76,8 @@ class ShortestPath {
         }
     }
 
-    //сплит по пробелу, преобразование в Double
-    double[][] readM() {
+    //считывание исходной матрицы
+    double[][] readMatrixPath() {
         int j = 0;
         double[][] mas = new double[20][20];
         List<String> mList = readFileContents("resources/matrix.txt");
@@ -75,6 +88,37 @@ class ShortestPath {
                     mas[i][j] = Double.valueOf(lineContent[i]);
                 }
                 j++;
+            }
+        }
+        return mas;
+    }
+
+    //считывание матрицы интенсивностей трафика в направлениях связи
+    double[][] readTrafficIntensityMatrix() { //посчитана в экселе
+        int j = 0;
+        double[][] mas = new double[20][20];
+        List<String> trafficList = readFileContents("resources/trafficIntensivity.txt");
+        if (!trafficList.isEmpty()) { //проверка на наличие данных в отчете
+            for (String line : trafficList) {  // пропускаем один элемент
+                String[] lineContent = line.split(" ");
+                for (int i = 0; i < 20; i++) {
+                    mas[i][j] = Double.valueOf(lineContent[i]);
+                }
+                j++;
+            }
+        }
+        return mas;
+    }
+
+
+    double[][] loadIntensity(double[][] intensities, int[][] routes) {
+        double[][] mas = new double[20][20];
+        for (int i = 0; i < 20; ++i) {
+            for (int j = 0; j < 20; ++j) {
+                mas[i][routes[i][j] - 1] += intensities[i][j];
+                for (int k = routes[i][j] - 1; k != j; k = routes[k][j] - 1) {
+                    mas[(int)k][routes[k][j] - 1] += intensities[i][j];
+                }
             }
         }
         return mas;
